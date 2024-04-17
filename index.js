@@ -6,6 +6,7 @@ const server = express();
 
 const bodyParser = require('body-parser');
 server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({extended: false}))
 
 const morgan = require('morgan');
 server.use(morgan('dev'));

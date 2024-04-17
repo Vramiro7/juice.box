@@ -91,7 +91,8 @@ async function getUserById(userId) {
   }
 }
 
-async function getUserByUsername(username) {
+// compares username send in req.body to users in the database and displays if there is match 
+async function getUserByUsername(username) { 
   try {
     const { rows: [ user ] } = await client.query(`
       SELECT *
@@ -134,6 +135,23 @@ async function createPost({
     return await addTagsToPost(post.id, tagList);
   } catch (error) {
     throw error;
+  }
+}
+
+async function deletePost(id) {
+  try{
+    const [deletedPost_tags, {rows: [deletedPost]}] = await client.query(`
+      DELETE FROM post_tags
+      WHERE "postId"=${id};
+    
+      DELETE FROM posts
+      WHERE id=${id}
+      RETURNING *;
+    `)
+    console.log(deletedPost)
+    return deletedPost;
+  } catch (err){
+    throw (err)
   }
 }
 
@@ -287,13 +305,9 @@ async function createTags(tagList) {
     return;
   }
 
-  const valuesStringInsert = tagList.map(
-    (_, index) => `$${index + 1}`
-  ).join('), (');
+  const valuesStringInsert = tagList.map((_, index) => `$${index + 1}`).join('), (');
 
-  const valuesStringSelect = tagList.map(
-    (_, index) => `$${index + 1}`
-  ).join(', ');
+  const valuesStringSelect = tagList.map((_, index) => `$${index + 1}`).join(', ');
 
   try {
     // insert all, ignoring duplicates
@@ -364,6 +378,7 @@ module.exports = {
   getUserByUsername,
   getPostById,
   createPost,
+  deletePost,
   updatePost,
   getAllPosts,
   getPostsByUser,

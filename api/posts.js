@@ -5,6 +5,7 @@ const { requireUser } = require('./utils');
 
 const { 
   createPost,
+  deletePost,
   getAllPosts,
   updatePost,
   getPostById,
@@ -38,7 +39,7 @@ postsRouter.get('/', async (req, res, next) => {
 });
 
 postsRouter.post('/', requireUser, async (req, res, next) => {
-  const { title, content = "" } = req.body;
+  const { title, content, active, tags } = req.body;
 
   const postData = {};
 
@@ -46,6 +47,8 @@ postsRouter.post('/', requireUser, async (req, res, next) => {
     postData.authorId = req.user.id;
     postData.title = title;
     postData.content = content;
+    postData.active = active;
+    postData.tags = tags; 
 
     const post = await createPost(postData);
 
@@ -98,7 +101,19 @@ postsRouter.patch('/:postId', requireUser, async (req, res, next) => {
 });
 
 postsRouter.delete('/:postId', requireUser, async (req, res, next) => {
-  res.send({ message: 'under construction' });
+  try {
+    const newlyDeletedPost = await deletePost(req.params.postId)
+    if(newlyDeletedPost){
+    res.send(newlyDeletedPost);
+    } else {
+      next({
+        name: 'DeletePostError',
+        message: 'There is no post associated with given Id'
+      })
+    } 
+  } catch ({name, message}){
+    next({name, message})
+  }
 });
 
 module.exports = postsRouter;
