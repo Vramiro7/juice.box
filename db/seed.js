@@ -33,7 +33,7 @@ async function dropTables() {
 async function createTables() {
   try {
     console.log("Starting to build tables...");
-
+// remove double quotes in query????
     await client.query(`
       CREATE TABLE users (
         id SERIAL PRIMARY KEY,
@@ -46,7 +46,7 @@ async function createTables() {
 
       CREATE TABLE posts (
         id SERIAL PRIMARY KEY,
-        "authorId" INTEGER REFERENCES users(id),
+        "authorId" INTEGER REFERENCES users(id),  
         title varchar(255) NOT NULL,
         content TEXT NOT NULL,
         active BOOLEAN DEFAULT true
@@ -79,19 +79,23 @@ async function createInitialUsers() {
       username: 'albert', 
       password: 'bertie99',
       name: 'Al Bert',
-      location: 'Sidney, Australia' 
+      location: 'Sidney, Australia',
+      active: true  
     });
     await createUser({ 
       username: 'sandra', 
       password: '2sandy4me',
       name: 'Just Sandra',
-      location: 'Ain\'t tellin\''
+      location: 'Ain\'t tellin\'',
+      active: false
+
     });
     await createUser({ 
       username: 'glamgal',
       password: 'soglam',
       name: 'Joshua',
-      location: 'Upper East Side'
+      location: 'Upper East Side',
+      active: true
     });
     
     console.log("Finished creating users!");

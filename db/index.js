@@ -1,8 +1,8 @@
 const { Client } = require('pg') // imports the pg module
 
 const client = new Client({
-  connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/juicebox-dev',
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+  connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/juicebox_dev',
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,  
 });
 
 /**
@@ -13,15 +13,16 @@ async function createUser({
   username, 
   password,
   name,
-  location
+  location,
+  active
 }) {
   try {
     const { rows: [ user ] } = await client.query(`
-      INSERT INTO users(username, password, name) 
-      VALUES($1, $2, $3) 
-      ON CONFLICT (username) DO NOTHING 
+      INSERT INTO users(username, password, name, location, active) 
+      VALUES($1, $2, $3, $4, $5) 
+      ON CONFLICT (username) DO NOTHING
       RETURNING *;
-    `, [username, password, name, location]);
+    `, [username, password, name, location, active]);
 
     return user;
   } catch (error) {
